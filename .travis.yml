@@ -13,6 +13,7 @@ script:
 
 after_script:
   - cd ./dist
+  - ls
   - git init
   - git config user.name "${USER}"
   - git config user.email "${U_EMAIL}"
