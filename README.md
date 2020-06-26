@@ -1,4 +1,7 @@
 # automatic
+
+[![Build Status](https://travis-ci.com/TinsFox/automatic.svg?branch=master)](https://travis-ci.com/TinsFox/automatic)
+
 ## Vue + travis Ci自动化部署示例
 ## Project setup
 ```
