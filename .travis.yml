@@ -18,8 +18,8 @@ after_script:
   - git config user.email "${U_EMAIL}"
   - git add .
   - git commit -m "Travis CI Auto Builder at `date +"%Y-%m-%d %H:%M"`" # 提交记录包含时间
-  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:deploy
-
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:deploy # 部署分支
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages # 在gh-pages分支部署到github pages
 branches:
   only:
     - master
