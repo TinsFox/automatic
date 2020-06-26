@@ -17,9 +17,12 @@ after_script:
   - git config user.name "${USER}"
   - git config user.email "${U_EMAIL}"
   - git add .
-  - git commit -m "Travis CI Auto Builder"
+  - git commit -m "Travis CI Auto Builder at `date +"%Y-%m-%d %H:%M"`" # 提交记录包含时间
   - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:deploy
 
 branches:
   only:
     - master
+
+notifications:
+  email: true
