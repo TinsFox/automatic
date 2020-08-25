@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.11/theme-chalk/index.css" rel="stylesheet">
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        }
+
+        .el-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .sysFile {
+            margin-bottom: 5px;
+        }
+
+        .sysFile:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app" align="center">
+    <el-container >
+        <el-header align="center">
+            <el-button @click="_initSockJs" type="primary" :disabled="isConnected">手动连接</el-button>
+            <el-button @click="_destroySockJs" type="danger" :disabled="!isConnected">断开连接</el-button>
+        </el-header>
+        <el-main >
+            <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-card>
+                        <div slot="header">
+                            <span>订单信息</span>
+                        </div>
+                            <el-card v-for="(val, key, index) in item">{{key}}：{{val}}</el-card>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-main>
+      <audio id="bgMusic">
+        <source src="2478.mp3" type="audio/mp3">
+      </audio>
+    </el-container>
+</div>
+</body>
+<script src="js/sockjs.min.js"></script>
+<script src="js/stomp.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.5.21/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.11/index.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.min.js"></script>
+<script>
+    const wsHost = "http://hk.tinsfox.com:8085/notification";
+    const wsTopic = "/topic/repair_item";
+    const app = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                isConnected: false,
+                stompClient: {},
+                socket: {},
+                item: {}
+            }
+        },
+        methods: {
+          playSound() {
+
+          },
+            _initSockJs() {
+                this.socket = new SockJS(wsHost);
+                this.stompClient = Stomp.over(this.socket);
+                this.stompClient.connect({}, (frame) => {
+                    console.log('websocket连接成功:' + frame);
+                    this.isConnected = true;
+                    this.$message('websocket服务器连接成功');
+                    // 另外再注册一下消息推送
+                    this.stompClient.subscribe(wsTopic, (response) => {
+                        console.log(response);
+                        this.item = JSON.parse(response.body);
+                      var audio = document.getElementById("bgMusic");
+                      audio.play();
+                    });
+                });
+            },
+            _destroySockJs() {
+                if (this.stompClient != null) {
+                    this.stompClient.disconnect();
+                    this.socket.onclose;
+                    this.socket.close();
+                    this.stompClient = {};
+                    this.socket = {};
+                    this.isConnected = false;
+                }
+                console.log('websocket断开成功！');
+                this.$message.error('websocket断开成功！');
+            }
+        },
+        mounted() {
+            this._initSockJs();
+        },
+        beforeDestroy() {
+            this._destroySockJs();
+        }
+
+    })
+</script>
+</html>
